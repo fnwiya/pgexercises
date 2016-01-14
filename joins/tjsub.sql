@@ -1,38 +1,27 @@
---wrong
-SELECT
-  (mem.firstname
-	|| ' '
-	|| mem.surname) as member
-  ,fac.name AS facilitie
-  ,(SELECT
-	bookingcost AS cost
-  FROM (
-	SELECT
-	  (CASE
-		WHEN mem.memid = 0 THEN
-		fac.guestcost * boo.slots
-		ELSE
-		fac.membercost * boo.slots
-		END) AS bookingcost
-	FROM
-	  cd.facilities fac
-	  ) a
-  WHERE
-	(CASE
-	  WHEN mem.memid = 0 THEN
-	  bookingcost > 30
-	  ELSE
-	  bookingcost > 30
-	  END)
-	) b
-FROM
-  cd.members mem
-  INNER JOIN
-  cd.bookings boo
-  USING(memid)
-WHERE
-  boo.starttime >= '2012-09-14'
-  AND
-  boo.starttime < '2012-09-15'
-ORDER BY
-  cost DESC;
+select 
+  member
+  ,facility
+  ,cost
+from (
+  select 
+	mems.firstname || ' ' || mems.surname as member
+	,facs.name as facility
+	,(case
+	when mems.memid = 0 then
+	bks.slots*facs.guestcost
+	else
+	bks.slots*facs.membercost
+	end) as cost
+  from
+	cd.members mems
+	inner join cd.bookings bks
+	  on mems.memid = bks.memid
+	inner join cd.facilities facs
+	  on bks.facid = facs.facid
+  where
+	bks.starttime >= '2012-09-14' 
+	and
+	bks.starttime < '2012-09-15'
+	) as bookings
+where cost > 30
+order by cost desc;          
