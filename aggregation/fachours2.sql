@@ -1,4 +1,3 @@
--- not solved by myself
 select 
   facid
   ,sum(slots) as totalslots
